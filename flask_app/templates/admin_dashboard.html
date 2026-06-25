@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Society Billing{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-black text-slate-800 tracking-tight">Admin Command Center</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Track monthly collection cycles, process manual checks/cash, and manage residential details.</p>
+        </div>
+        <div class="mt-4 md:mt-0 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-mono border border-slate-800">
+            Active Period: <strong class="text-emerald-400">June 2026</strong>
+        </div>
+    </div>
+
+    <!-- Statistics Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Total Collected -->
+        <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex items-center space-x-4">
+            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+            </div>
+            <div>
+                <span class="text-[9px] text-slate-400 font-mono uppercase tracking-wider block">Total Collections</span>
+                <span class="text-lg font-bold text-slate-800">₹{{ "{:,.2f}".format(total_collected) }}</span>
+                <span class="text-[10px] text-slate-500 block">expected: ₹{{ "{:,.2f}".format(total_expected) }}</span>
+            </div>
+        </div>
+
+        <!-- Collection Ratio -->
+        <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex items-center space-x-4">
+            <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg border border-indigo-100">
+                <span class="text-xs font-black font-mono">{{ collection_ratio }}%</span>
+            </div>
+            <div class="flex-grow">
+                <span class="text-[9px] text-slate-400 font-mono uppercase tracking-wider block">Collection Efficiency</span>
+                <span class="text-lg font-bold text-slate-800">{{ collection_ratio }}%</span>
+                <div class="w-full bg-slate-100 h-1 rounded-full mt-1.5 overflow-hidden">
+                    <div class="bg-indigo-600 h-1 rounded-full" style="width: {{ collection_ratio }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paid count -->
+        <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex items-center space-x-4">
+            <div class="p-3 bg-slate-50 text-slate-700 rounded-lg border border-slate-200">
+                <svg class="h-6 w-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div>
+                <span class="text-[9px] text-slate-400 font-mono uppercase tracking-wider block">Cleared Units</span>
+                <span class="text-lg font-bold text-slate-800">{{ paid_count }} <span class="text-[11px] text-slate-400 font-normal">/ {{ total_units }} properties</span></span>
+                <span class="text-[10px] text-slate-500 block">Settled dues</span>
+            </div>
+        </div>
+
+        <!-- Pending count -->
+        <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex items-center space-x-4">
+            <div class="p-3 bg-red-50 text-red-600 rounded-lg border border-red-100">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div>
+                <span class="text-[9px] text-slate-400 font-mono uppercase tracking-wider block">Outstanding Units</span>
+                <span class="text-lg font-bold text-red-600">{{ unpaid_count }} <span class="text-[11px] text-slate-400 font-normal">properties</span></span>
+                <span class="text-[10px] text-slate-500 block">₹{{ "{:,.2f}".format(unpaid_count * 2500.0) }} outstanding</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collection Control Table Card -->
+    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+        
+        <!-- Filter Bar -->
+        <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-2">
+                <span class="text-xs text-slate-400 font-mono">WING:</span>
+                <div class="flex space-x-1">
+                    {% for w in ["All", "A", "B", "C"] %}
+                        <a
+                            href="/admin?wing={{ w }}&status={{ active_status }}"
+                            class="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-semibold hover:bg-slate-50 transition {% if active_wing == w %}!bg-slate-800 !text-white !border-slate-800{% endif %}"
+                        >
+                            {{ w }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <span class="text-xs text-slate-400 font-mono">STATUS:</span>
+                <div class="flex space-x-1">
+                    {% for s in ["All", "Paid", "Unpaid"] %}
+                        <a
+                            href="/admin?wing={{ active_wing }}&status={{ s }}"
+                            class="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-semibold hover:bg-slate-50 transition {% if active_status == s %}!bg-slate-800 !text-white !border-slate-800{% endif %}"
+                        >
+                            {{ s }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Grid -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        <th class="py-3 px-5">Flat Unit</th>
+                        <th class="py-3 px-5">Resident Owner</th>
+                        <th class="py-3 px-5">Contact Details</th>
+                        <th class="py-3 px-5">Monthly Status</th>
+                        <th class="py-3 px-5 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
+                    {% for res in residents %}
+                        <tr class="hover:bg-slate-50/50 transition">
+                            <td class="py-3 px-5 font-bold font-mono text-slate-800">{{ res.id }}</td>
+                            <td class="py-3 px-5 font-semibold text-slate-700">{{ res.owner_name }}</td>
+                            <td class="py-3 px-5 leading-normal text-[11px] text-slate-500">
+                                <div>+91 {{ res.contact_number }}</div>
+                                <div class="font-mono text-[9px] text-slate-400">{{ res.email }}</div>
+                            </td>
+                            <td class="py-3 px-5">
+                                {% if res.status == "Paid" %}
+                                    <span class="inline-flex items-center space-x-1 px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-full font-bold text-[9px]">
+                                        <span class="w-1 h-1 rounded-full bg-emerald-500"></span>
+                                        <span>PAID</span>
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center space-x-1 px-2.5 py-1 bg-red-50 text-red-800 border border-red-100 rounded-full font-bold text-[9px]">
+                                        <span class="w-1 h-1 rounded-full bg-red-500"></span>
+                                        <span>UNPAID</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-5 text-right space-x-1">
+                                {% if res.status == "Unpaid" %}
+                                    <form action="/admin/override/{{ res.id }}" method="POST" class="inline-block">
+                                        <input type="hidden" name="status" value="Paid" />
+                                        <input type="hidden" name="method" value="Cash" />
+                                        <input type="hidden" name="notes" value="Manually settled as cash to society admin." />
+                                        <button
+                                            type="submit"
+                                            class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold"
+                                            title="Quick clear as cash payment"
+                                        >
+                                            Log Cash
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <form action="/admin/override/{{ res.id }}" method="POST" class="inline-block">
+                                        <input type="hidden" name="status" value="Unpaid" />
+                                        <button
+                                            type="submit"
+                                            class="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded text-[10px] font-bold"
+                                            title="Mark back as Unpaid"
+                                        >
+                                            Reset
+                                        </button>
+                                    </form>
+
+                                    {% if res.payments %}
+                                        <a
+                                            href="/portal/receipt/{{ res.payments[0].id }}"
+                                            class="inline-flex px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-[10px] font-bold"
+                                            title="Download generated ReportLab PDF"
+                                        >
+                                            PDF Bill
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colSpan="5" class="py-8 text-center text-slate-400 font-mono text-xs">No matching society flats meet filter criteria.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

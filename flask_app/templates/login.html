@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Resident Portal Login - Society Maintenance{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-12">
+    <div class="text-center mb-8">
+        <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Resident Portal Login</h2>
+        <p class="text-xs text-slate-500 mt-1">Enter your flat ID to review outstanding dues, generate payment links, and download receipts.</p>
+    </div>
+
+    <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
+        <form action="/portal" method="POST" class="space-y-4">
+            <div class="space-y-1.5">
+                <label for="flat_id" class="text-xs font-bold text-slate-500 uppercase tracking-wider block font-mono">Your Flat ID</label>
+                <input
+                    type="text"
+                    name="flat_id"
+                    id="flat_id"
+                    placeholder="e.g. A-101, B-203, C-404"
+                    class="w-full px-4 py-3 border border-slate-300 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-semibold text-slate-800 tracking-wide uppercase placeholder-slate-400"
+                    required
+                />
+            </div>
+
+            <button
+                type="submit"
+                class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-sm uppercase tracking-wider"
+            >
+                Enter Resident Dashboard
+            </button>
+        </form>
+
+        <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+            <p class="text-[10px] text-slate-400 font-mono">DEMO FLATS TO TRY: <strong>A-101</strong>, <strong>B-102</strong>, <strong>C-204</strong></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

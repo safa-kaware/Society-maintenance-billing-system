@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Society Billing System{% endblock %}</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-950 font-sans min-h-screen flex flex-col">
+
+    <!-- Top Navbar Banner -->
+    <header className="bg-slate-900 shadow-md">
+        <div class="bg-slate-900 border-b border-slate-800 text-white py-4 px-6">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-base font-bold tracking-tight">SOCIETY BILLING</h1>
+                        <p class="text-[10px] text-slate-400 font-mono">Heights Co-Op Housing Society Ltd.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <a href="/" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">Resident Portal</a>
+                    <a href="/admin" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 rounded-lg text-xs font-bold text-white shadow-sm transition">Admin Command</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    <div class="max-w-4xl mx-auto w-full px-6 mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="p-4 rounded-xl text-xs font-semibold mb-3 border {% if category == 'success' %}bg-emerald-50 border-emerald-100 text-emerald-800{% elif category == 'error' %}bg-red-50 border-red-100 text-red-800{% else %}bg-slate-50 border-slate-200 text-slate-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-6 py-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-[10px] text-slate-400 font-mono mt-12">
+        <p>© 2026 Heights Co-Operative Housing Society Ltd. All rights reserved.</p>
+        <p class="mt-1 text-[9px] text-slate-300">Powered by Flask, SQLite, and Secure UPI Deep Linking Protocols.</p>
+    </footer>
+
+</body>
+</html>
