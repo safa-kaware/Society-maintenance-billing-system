@@ -2,7 +2,5 @@
   "name": "Kaveri Bldg Maintenance Billing",
   "description": "An automated billing and payment tracking system for housing societies. Residents can view dues, pay via mock UPI deep links, and generate PDF receipts. Admins can manage payment statuses and track collections.",
   "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
+  "majorCapabilities": []
 }
