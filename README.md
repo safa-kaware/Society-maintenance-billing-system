@@ -2,6 +2,8 @@
 
 A comprehensive digital solution for managing housing society maintenance, billing, and payments. This application provides a streamlined interface for both residents to pay their dues and administrators to manage the society's finances.
 
+**🌐 Live Demo:** [https://society-maintenance-billing-system.vercel.app/](https://society-maintenance-billing-system.vercel.app/)
+
 ## 🚀 Overview
 
 The **Society Maintenance & Billing System** is a dual-portal application designed to automate the manual process of collecting maintenance fees. It features a modern, mobile-first React frontend and a robust Node.js/Express backend.
